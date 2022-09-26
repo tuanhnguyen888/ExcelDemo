@@ -31,6 +31,7 @@ func write() {
 	if err := f.SaveAs("Book1.xlsx"); err != nil {
 		panic(err)
 	}
+
 }
 
 func read() {
@@ -55,19 +56,51 @@ func read() {
 }
 
 func main() {
-	myStruct := &GroupsTree{
+	myStruct := GroupsTree{
 		Id:         1,
 		GroupName:  "G-r",
 		GroupLevel: 0,
 		EmpId:      "0",
 	}
 
-	jsonBytes, err := json.Marshal(myStruct.Id)
-	if err != nil {
-		panic(err)
-	}
-	fmt.Println(string(jsonBytes))
+	structToExcel(myStruct)
 
 	// write()
 	// read()
+}
+
+func structToExcel(myStruct GroupsTree) {
+	idByte, err := json.Marshal(myStruct.Id)
+	if err != nil {
+		panic(err)
+	}
+	GNByte, err := json.Marshal(myStruct.GroupName)
+	if err != nil {
+		panic(err)
+	}
+
+	GLByte, err := json.Marshal(myStruct.GroupLevel)
+	if err != nil {
+		panic(err)
+	}
+
+	empID, err := json.Marshal(myStruct.EmpId)
+	if err != nil {
+		panic(err)
+	}
+
+	f, err := excelize.OpenFile("Book1.xlsx")
+	if err != nil {
+		panic(err)
+	}
+
+	f.SetCellValue("Sheet1", "A2", string(idByte))
+	f.SetCellValue("Sheet1", "B2", string(GNByte))
+	f.SetCellValue("Sheet1", "C2", string(GLByte))
+	f.SetCellValue("Sheet1", "D2", string(empID))
+
+	// save xlsx file by the given path
+	if err := f.SaveAs("Book1.xlsx"); err != nil {
+		panic(err)
+	}
 }
